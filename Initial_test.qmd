@@ -1,0 +1,57 @@
+---
+title: "Initial Tests"
+author: "Alan Jackson"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+
+library(tidyverse)
+library(OpenStreetMap)
+
+Path <- tribble(~Number, ~Name, ~Lat, ~Long,
+                 1, "Water Works",  29.80366944292952, -95.40557488726397,
+                 2, "Wayne Corrl house", 29.80622004196774, -95.40628978134352,
+                 3, "MKT trail", 29.80612830252157, -95.40587229885072,
+                 4, "19th street", 29.80289443335739, -95.40226291565693,
+                 5, "Heights Victorian Rose Garden", 29.80376717338378, -95.39797081644211
+                )
+
+Basemap <- OpenStreetMap::openmap(
+  upperLeft=c(29.8100, -95.4109),
+  lowerRight=c(29.7820, -95.3900),
+  zoom=NULL,
+  type='osm',
+  mergeTiles=TRUE
+)
+
+Basemap.latlon <- openproj(Basemap, projection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+
+OpenStreetMap::autoplot.OpenStreetMap(Basemap.latlon) +
+  geom_point(data=Path, aes(x=Long, y=Lat),
+             fill='green', size=4, shape=21) +
+  geom_label(data=Path, aes(x=Long, y=Lat, label=Number))
+
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+
+#   Make a simple map
+
+
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
