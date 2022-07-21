@@ -1,24 +1,42 @@
 ---
 title: "Initial Tests"
 author: "Alan Jackson"
-format: html
+format:
+  html:
+    css: styles.css
+    html-math-method: katex
+  pdf:
+    documentclass: leaflet
+    pagesize: letterpaper
+    margin-left: 5mm
+    margin-right: 5mm
+    latex-engine: tinytex
 editor: visual
 ---
 
-## Quarto
+## A walk through the Houston Heights
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+::: {layout-ncol="2"}
+The Heights is one of the older neighborhoods in Houston, founded in 1891 [^1]. The core of the neighborhood is Heights Boulevard, and most of our walk will be on or near that street. There actually used to be a street car line that went down Heights and ended up downtown, but that ended in the 1930's [^2].<br><br> This is a 3 mile (one way) walk through the core of the neighborhood, with a look at some of the history and many of the interesting buildings. This walk is split in two, so that you could either do a 3 mile round-trip, or a six mile round-trip.<br><br> There will also be a number of optional side-trips that will be pointed out along the way.
 
-## Running Code
+![Full map of walk area](Full_map_Heights.png "Full Map"){fig-alt="Full map of walk area"}
+:::
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+[^1]: City of Houston Historic Preservation Manual http://www.houstontx.gov/planning/HistoricPres/
+HistoricPreservationManual/historic_districts/heights.html
+
+[^2]: Houston History Magazine https://houstonhistorymagazine.org/wp-content/uploads/2011/11/V5-N2-Fuglaar-Streetcar.pdf
 
 ```{r}
+#| label: initialize
+#| echo: false 
+#| warning: false
 
 library(tidyverse)
 library(OpenStreetMap)
+library(leaflet)
 
-Path <- tribble(~Number, ~Name, ~Lat, ~Long,
+Points <- tribble(~Number, ~Name, ~Lat, ~Long,
                  1, "Water Works",  29.80366944292952, -95.40557488726397,
                  2, "Wayne Corrl house", 29.80622004196774, -95.40628978134352,
                  3, "MKT trail", 29.80612830252157, -95.40587229885072,
@@ -26,32 +44,84 @@ Path <- tribble(~Number, ~Name, ~Lat, ~Long,
                  5, "Heights Victorian Rose Garden", 29.80376717338378, -95.39797081644211
                 )
 
-Basemap <- OpenStreetMap::openmap(
-  upperLeft=c(29.8100, -95.4109),
-  lowerRight=c(29.7820, -95.3900),
-  zoom=NULL,
-  type='osm',
-  mergeTiles=TRUE
-)
+Path <- tribble(~Number, ~Lat, ~Long,
+                1, 29.80584349411739, -95.4063833244378,
+                2, 29.805836844796342, -95.40584747172495,
+                3, 29.8028957141002, -95.40584050707737,
+                4, 29.803004497182375, -95.3981445683234,
+                5, 29.80390094588188, -95.39816546227536,
+                6, 29.803915047257814, -95.39797045205984,
+                7, 29.80390094588188, -95.39816546227536,
+                8, 29.80199321282791, -95.39813063902415
+                )
 
-Basemap.latlon <- openproj(Basemap, projection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-
-OpenStreetMap::autoplot.OpenStreetMap(Basemap.latlon) +
-  geom_point(data=Path, aes(x=Long, y=Lat),
-             fill='green', size=4, shape=21) +
-  geom_label(data=Path, aes(x=Long, y=Lat, label=Number))
-
+Bounding_box <- c(-95.4109, 29.7820, -95.3900,  29.8100)
+#c(upper left=c(29.8100, -95.4109),
+ # lowerRight=c(29.7820, -95.3900)
 ```
 
-You can add options to executable code like this
+## Let's run openstreetmap and see how it looks
 
 ```{r}
+#| label: OpenStreetMap
 #| echo: false
 
-#   Make a simple map
+#   Make a simple map using OpenStreetMap
+
+# Basemap <- OpenStreetMap::openmap(
+#   upperLeft=c(29.8100, -95.4109),
+#   lowerRight=c(29.7820, -95.3900),
+#   zoom=15,
+#   type='osm',
+#   mergeTiles=TRUE
+# )
 
 
+#Basemap.latlon <- openproj(Basemap, projection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+
+#OpenStreetMap::autoplot.OpenStreetMap(Basemap.latlon) +
+  #geom_point(data=Points, aes(x=Long, y=Lat),
+  #           fill='green', size=4, shape=21) +
+#  geom_label(data=Points, aes(x=Long, y=Lat, label=Number))# +
+#  geom_path(data=Path, aes(x=Long, y=Lat), 
+#            color="blue", linetype="dashed", size=1)
 
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+## Now let's run Leaflet and compare
+
+```{r}
+#| label: Leaflet
+#| echo: false
+
+#   Make a simple map using Leaflet
+
+# m <- leaflet() %>% #leafletOptions(minZoom=14, maxZoom=16) %>% 
+#   addTiles() %>% 
+#   addMarkers(data=Points, ~Long, ~Lat) 
+# 
+# m %>%  fitBounds(-29.7820, 95.4109, 29.8100, -95.3900) 
+```
+
+## Starting point
+
+We will start at the Waterworks, a fairly new development that took an old water treatment plant and repurposed the old buildings into a shopping and restaurant space.
+
+::: {.content-visible when-format="html"}
+
+![Water Works](WaterWorksPlaceholder.png "Waterworks"){fig-alt="Water Works"}
+
+:::
+
+```{r}
+#| label: Not Leaflet
+#| echo: false
+
+#   Make a simple map using Leaflet
+
+# m <- leaflet() %>% #leafletOptions(minZoom=14, maxZoom=16) %>% 
+#   addTiles() %>% 
+#   addMarkers(data=Points, ~Long, ~Lat) 
+# 
+# m %>%  fitBounds(-29.7820, 95.4109, 29.8100, -95.3900) 
+```
